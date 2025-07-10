@@ -143,7 +143,7 @@
         this.opacity = 0.35 + Math.sin(this.angle) * 0.15; 
         this.x += this.speed.x + globalStarDriftX;
         this.y += this.speed.y + globalStarDriftY;
-        // Improved wrapping: smoothly re-enter from opposite side
+       
         if (this.x < -this.radius) this.x = width + this.radius;
         if (this.x > width + this.radius) this.x = -this.radius;
         if (this.y < -this.radius) this.y = height + this.radius;
@@ -162,7 +162,7 @@
       }
     }
 
-    // Generate stars
+    
     let stars = [];
     function createStars(num) {
       stars = [];

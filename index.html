@@ -25,7 +25,7 @@
             background: transparent;
             padding-top: 10vh;
             padding-bottom: 10vh;
-            min-height: 180vh; /* Ensure enough height for scrolling */
+            min-height: 180vh; 
         }
         
         .main-section {
@@ -37,7 +37,7 @@
         }
         
         .songart {
-            width: 15%;
+            width: 23%;
             object-fit: cover;
             border-radius: 10px;
             box-shadow:
@@ -52,7 +52,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
+            width: 100%;
             background: rgba(30,30,30,0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 12px 0 rgba(0,0,0,0.3);
@@ -72,8 +72,10 @@
         .sticky-content {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             flex-direction: row;
+            width: 100%;
+            padding: 0 2vw;
         }
         .sticky-title-author {
             display: flex;
@@ -132,7 +134,7 @@
         .lyrics-section {
             margin: 10vh auto 0 auto;
             max-width: 600px;
-            padding: 2rem 1.5rem 3rem 1.5rem;
+            padding: 2rem 1rem;
             background: rgba(0,0,0,0.18);
             border-radius: 18px;
             color: #fff;
@@ -144,6 +146,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.7s;
+            z-index: 3000;
         }
         
         .lyrics-section.visible {
@@ -425,27 +428,40 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
+        width: 100%;
         flex-direction: row;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        background: rgba(30,30,30,0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.3);
+        padding: 0.8rem 2rem;
+        gap: 0;
+        transition: all 0.5s cubic-bezier(.4,1.4,.6,1);
+        padding-left: 1.2rem;
+        padding-right: 1.2rem;
+    }
+    .sticky-transform.compact .compact-inner {
         max-width: 700px;
         margin: 0 auto;
-        background: rgba(30,30,30,0.95);
-        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.3);
-        padding: 0.5rem 0;
-        gap: 1rem;
-        transition: all 0.5s cubic-bezier(.4,1.4,.6,1);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.2rem;
+        
     }
     .sticky-transform .songart {
         transition: width 0.5s, height 0.5s, box-shadow 0.5s;
     }
     .sticky-transform.compact .songart {
-        width: 70px;
-        min-width: 60px;
-        max-width: 70px;
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+        
+        max-width: 50px;
         border-radius: 8px;
-        margin-right: 15px;
+        margin-right: 0; 
         box-shadow:
             -2px -2px 4px 0 rgba(255,255,255,0.35),
              2px  2px 4px 0 rgba(255,255,255,0.35),
@@ -459,11 +475,13 @@
         justify-content: center;
         transition: all 0.5s;
         text-align: center;
+        margin-left: 20px;
     }
     .sticky-transform.compact .song-meta {
-        align-items: center;
-        margin-right: 1.2rem;
-        text-align: center;
+        align-items: flex-start;
+        margin-right: auto; 
+        margin-left: 1rem;
+        text-align: left;
     }
     .sticky-transform .fredoka-main {
         font-size: 2rem;
@@ -495,9 +513,22 @@
     }
     .sticky-transform.compact .custom-audio-player {
         margin-top: 0;
-        max-width: 180px;
-        width: 180px;
+        max-width: 200px;
+        width: 200px;
+        flex-shrink: 0;
         box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+        margin-left: 0;
+        transform: translateX(-40px);
+    }
+    @media (max-width: 900px) {
+        .sticky-transform.compact {
+            padding: 0.8rem 1rem; 
+        }
+        .sticky-transform.compact .custom-audio-player {
+            max-width: 150px;
+            width: 150px;
+            transform: translateX(-20px);
+        }
     }
     @media (max-width: 600px) {
         .sticky-transform .songart {
@@ -505,9 +536,13 @@
             min-width: 36px;
             max-width: 70vw;
         }
+        .sticky-transform.compact {
+            padding: 0.6rem 0.5rem;
+        }
         .sticky-transform.compact .songart {
             width: 36px !important;
-            min-width: 28px;
+            height: 36px !important;
+            min-width: 36px;
             max-width: 36px;
         }
         .sticky-transform .fredoka-main {
@@ -530,7 +565,7 @@
             width: 120px;
         }
     }
-    /* Fix for sticky bar overlap: add margin to lyrics-section when sticky bar is compact */
+    
     .sticky-transform.compact ~ .lyrics-section {
         margin-top: 70px;
         transition: margin-top 0.5s;
@@ -540,12 +575,12 @@
         font-family: "Fredoka", sans-serif;
         color: #fff;
         text-align: center;
-        margin: 0 0 1.2rem 0;
+        margin: 2.5rem 0 1.2rem 0;
         font-weight: 400;
         line-height: 1.5;
         background: rgba(0,0,0,0.10);
         border-radius: 10px;
-        padding: 0.7rem 0.5rem;
+        padding: 2rem 1rem;
         box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
     }
     @media (max-width: 600px) {
@@ -554,6 +589,22 @@
             padding: 0.5rem 0.2rem;
             margin-bottom: 0.7rem;
         }
+    }
+    @media (max-width: 600px) {
+        .lyrics-section {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .birthday-message {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    }
+    .lyrics-section h3 {
+        margin-bottom: 0;
+    }
+    .lyrics-section p {
+        margin-top: 0;
     }
     </style>
 </head>
@@ -569,12 +620,12 @@
     </div>
     
     <div class="container">
-    <!-- Embedded stars.html start -->
+ 
     <canvas id="bg-gradient" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;"></canvas>
     <canvas id="star-canvas"></canvas>
     <img id="tree-silhouette-flip" src="tree.png" alt="Tree Silhouette Flipped" />
     <img id="tree2-silhouette" src="tree2.png" alt="Tree2 Silhouette" />
-    <!-- Embedded stars.html end -->
+
     <div class="main-section" id="mainSection">
         <h3 class="birthday-message">Happy 20th Birthday, my dear <b>Angela</b>! Here's the song I wrote for you!</h3>
         <div class="sticky-transform" id="stickyTransform">
@@ -591,6 +642,7 @@
             </div>
         </div>
         <audio id="audioSource" src="gaan.wav"></audio>
+        <br><br>
         <div class="scroll-indicator" id="scrollIndicator">
             <span style="color:#fff;font-family:'Fredoka',sans-serif;font-size:1rem;">Scroll down</span>
             <span class="scroll-arrow"></span>
@@ -600,27 +652,36 @@
         <div class="lyrics-section">
             <h3>Lyrics</h3>
             <p>
-                Gaan gaan gaan gaan gaan<br>
-                Eto bhalobasha, eto shopno<br>
-                Tomake niye, shurer majhe<br>
-                Gaan gaan gaan gaan gaan<br>
+                Di ko alam, kung ano pakiramdam <br>
+                Hawakan ng iyong mahal<br>
+                Ngunit nagbago lahat ng isang gabi lang<br>
+                Nung unang dampi ng balat mo sa aking katawan<br>
+                O, kay sarap naman<br>
+
                 <br>
-                Shopnogulo tomar chokhe<br>
-                Hashi tomar othey thotey<br>
-                Ei moner kotha, shudhu tomakei bola<br>
+                Ganito kagaan, parang namamasyal lang, o, ano bang pake nila?<br>
+                Tumingin tingin lang sila, <br>
+                Sakin lang ang 'yong mata<br>
+                Na napaka-ganda<br>
+                
                 <br>
-                Gaan gaan gaan gaan gaan<br>
-                Tomar kachhe, amar shob kichu<br>
-                Tomake niye, shurer majhe<br>
-                Gaan gaan gaan gaan gaan<br>
+                Balik sa ating munting tahanan,<br>
+                Sa kama na unang pinagsaluhan,<br>
+                Lagkit at init man ang kalaban<br>
+                Hindii papayag, di ka mahagkan<br>
+
                 <br>
+                Tahimik na gabi,<br>
+                Walang rinig kundi tinig ng mga puso <br>
+                Dama mo ba, o aking sinta,<br>
+                Minamahal kita, hanggang huling hinga   <br>
                
             </p>
         </div>
     </div>
     
     <script>
-        // Sticky transform on scroll
+     
         const stickyTransform = document.getElementById('stickyTransform');
         const mainSection = document.getElementById('mainSection');
         const lyricsSection = document.querySelector('.lyrics-section');
@@ -629,7 +690,7 @@
         window.addEventListener('scroll', function() {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const mainRect = mainSection.getBoundingClientRect();
-            // When main section is scrolled past, compact the sticky-transform
+          
             if (scrollTop > 100) {
                 stickyTransform.classList.add('compact');
                 if(scrollIndicator) scrollIndicator.classList.add('hide');
@@ -638,7 +699,7 @@
                 if(scrollIndicator) scrollIndicator.classList.remove('hide');
             }
         });
-        // Lyrics fade-in on scroll into view
+       
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach(entry => {
@@ -652,7 +713,7 @@
             { threshold: 0.1 }
         );
         observer.observe(lyricsSection);
-        // Audio player functionality
+      
         const audio = document.getElementById('audioSource');
         const playPauseBtn = document.getElementById('playPauseBtn');
         const seekBar = document.getElementById('seekBar');
@@ -689,10 +750,10 @@
         audio.addEventListener('pause', () => {
             playPauseBtn.innerHTML = '&#9654;';
         });
-        // Debug: Log when sticky transform should be visible
+     
         console.log('Sticky transform script loaded');
     </script>
-    <!-- --- Embedded stars.html script --- -->
+  
     <script src="stars.js"></script>
 </body>
 </html>
