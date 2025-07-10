@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    body {
+      background: #060b23; 
+    }
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+    #tree-silhouette-flip, #tree2-silhouette {
+      position: fixed;
+      bottom: -90vh;
+      height: auto;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+      display: block;
+      opacity: 0.7;
+    }
+
+     #tree2-silhouette {
+      position: fixed;
+      bottom: -70vh;
+      height: auto;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+      display: block;
+      opacity: 0.7;
+    }
+    
+    #tree-silhouette-flip {
+      left: 0;
+      width: 45vw;
+      transform: scaleX(-1);
+    }
+    #tree2-silhouette {
+      right: 0;
+      width: 45vw;
+    }
+    @media (max-width: 800px) {
+      #tree-silhouette-flip, #tree2-silhouette {
+        width: 70vw !important;
+        bottom: -20vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-gradient" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;"></canvas>
+  <canvas id="star-canvas"></canvas>
+
+  <img id="tree-silhouette-flip" src="tree.png" alt="Tree Silhouette Flipped" />
+  <img id="tree2-silhouette" src="tree2.png" alt="Tree2 Silhouette" />
+  <script>
+    // Responsive canvas setup
+    function setCanvasSize(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      return dpr;
+    }
+
+    // Draw radial gradient background
+    function drawGradient() {
+      const bgCanvas = document.getElementById('bg-gradient');
+      const dpr = setCanvasSize(bgCanvas);
+      const bgCtx = bgCanvas.getContext('2d');
+      bgCtx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+      bgCtx.scale(dpr, dpr);
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const radius = Math.max(cx, cy) * 1.1;
+      const grad = bgCtx.createRadialGradient(cx, cy, radius * 0.2, cx, cy, radius);
+      grad.addColorStop(0, '#030617'); // darker center
+      grad.addColorStop(0.7, '#060b23');
+      grad.addColorStop(1, '#000'); 
+      bgCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      bgCtx.fillStyle = grad;
+      bgCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+    drawGradient();
+
+    const canvas = document.getElementById('star-canvas');
+    let ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let dpr = setCanvasSize(canvas);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = setCanvasSize(canvas);
+      ctx = canvas.getContext('2d');
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      drawGradient();
+      createStars(80); // re-generate stars for new size
+    }
+    window.addEventListener('resize', resize);
+
+    // Responsive tree silhouette
+    // No JS needed for tree responsiveness now
+
+    class Star {
+      constructor(x, y, radius, speed, twinkleSpeed) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.baseRadius = radius;
+        this.speed = speed;
+        this.twinkleSpeed = twinkleSpeed;
+        this.angle = Math.random() * Math.PI * 2;
+        this.opacity = Math.random() * 0.25 + 0.25;
+      }
+      update() {
+        this.angle += this.twinkleSpeed;
+        this.radius = this.baseRadius + Math.sin(this.angle) * 0.5;
+        this.opacity = 0.35 + Math.sin(this.angle) * 0.15; 
+        this.x += this.speed.x;
+        this.y += this.speed.y;
+        // Wrap around screen
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+      }
+      draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, Math.abs(this.radius), 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = '#fff';
+        ctx.shadowBlur = 3; // less glow
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Generate stars
+    let stars = [];
+    function createStars(num) {
+      stars = [];
+      for (let i = 0; i < num; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        const radius = Math.random() * 0.7 + 0.15; 
+        const speed = {
+          x: (Math.random() - 0.5) * 0.02,
+          y: (Math.random() - 0.5) * 0.02
+        };
+        const twinkleSpeed = Math.random() * 0.03 + 0.01;
+        stars.push(new Star(x, y, radius, speed, twinkleSpeed));
+      }
+    }
+    createStars(80); 
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let star of stars) {
+        star.update();
+        star.draw(ctx);
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Interactive: burst of stars on click
+    function burst(x, y) {
+      for (let i = 0; i < 20; i++) {
+        const angle = (Math.PI * 2) * (i / 20);
+        const speed = {
+          x: Math.cos(angle) * (Math.random() * 1.5 + 0.5),
+          y: Math.sin(angle) * (Math.random() * 1.5 + 0.5)
+        };
+        const twinkleSpeed = Math.random() * 0.05 + 0.02;
+        const radius = Math.random() * 0.7 + 0.15; // smaller burst stars
+        const burstStar = new Star(x, y, radius, speed, twinkleSpeed);
+        // Fade out burst stars
+        let life = 0;
+        const maxLife = 60 + Math.random() * 30;
+        burstStar.update = function() {
+          this.x += this.speed.x;
+          this.y += this.speed.y;
+          this.opacity -= 0.7 / maxLife; // fade out less bright
+          life++;
+        };
+        burstStar.draw = function(ctx) {
+          if (this.opacity > 0) {
+            ctx.save();
+            ctx.globalAlpha = this.opacity;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, Math.abs(this.radius), 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = '#fff';
+            ctx.shadowBlur = 3; // less glow
+            ctx.fill();
+            ctx.restore();
+          }
+        };
+        stars.push(burstStar);
+      }
+    }
+    canvas.addEventListener('click', function(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      burst(x, y);
+    });
+  </script>
+</body>
+</html> 
