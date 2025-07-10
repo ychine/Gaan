@@ -4,9 +4,688 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gaan by ychine</title>
-    
+    <link rel="icon" href="heart.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+           
+            min-height: 100vh;
+        }
+        
+        .container {
+            z-index: 1000;
+            position: relative;
+            width: 100vw;
+            background: transparent;
+            padding-top: 10vh;
+            padding-bottom: 10vh;
+            min-height: 180vh; /* Ensure enough height for scrolling */
+        }
+        
+        .main-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10vh;
+        }
+        
+        .songart {
+            width: 15%;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow:
+                -4px -4px 8px 0 rgba(255,255,255,0.45),
+                 4px  4px 8px 0 rgba(255,255,255,0.45),
+                 4px -4px 8px 0 rgba(0,0,0,0.18),
+                -4px  4px 8px 0 rgba(0,0,0,0.18);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            background: rgba(30,30,30,0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.3rem 0;
+            transform: translateY(-100%);
+            transition: transform 0.4s ease;
+        }
+        
+        .sticky-header.visible {
+            transform: translateY(0);
+        }
+        
+        .sticky-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
+        }
+        .sticky-title-author {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+        }
+        
+        .sticky-songart {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+            background: rgba(255,255,255,0.1);
+            box-shadow:
+                -2px -2px 4px 0 rgba(255,255,255,0.35),
+                 2px  2px 4px 0 rgba(255,255,255,0.35),
+                 2px -2px 4px 0 rgba(0,0,0,0.13),
+                -2px  2px 4px 0 rgba(0,0,0,0.13);
+        }
+        
+        .sticky-title {
+            font-family: "Fredoka", sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-right: 0;
+            line-height: 1.1;
+        }
+        
+        .sticky-author {
+            font-family: "Fredoka", sans-serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #fff;
+            opacity: 0.9;
+        }
+        
+        .custom-audio-player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 0.5rem 0.7rem;
+            margin-top: 1.2rem;
+            width: 80%;
+            max-width: 250px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 24px 0 rgba(0,0,0,0.12);
+            backdrop-filter: blur(8px);
+        }
+        
+        .lyrics-section {
+            margin: 10vh auto 0 auto;
+            max-width: 600px;
+            padding: 2rem 1.5rem 3rem 1.5rem;
+            background: rgba(0,0,0,0.18);
+            border-radius: 18px;
+            color: #fff;
+            font-family: "Fredoka", sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            text-align: center;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.10);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s;
+        }
+        
+        .lyrics-section.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        @media (max-width: 1000px) {
+            .songart {
+                width: 70vw !important;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .sticky-header {
+                padding: 0.9rem 0;
+            }
+            .sticky-songart {
+                width: 36px;
+                height: 36px;
+                margin-right: 12px;
+            }
+            .sticky-title {
+                font-size: 1.3rem;
+            }
+            .sticky-author {
+                font-size: 1rem;
+            }
+            .lyrics-section {
+                padding: 1rem 0.5rem 2rem 0.5rem;
+                font-size: 1rem;
+            }
+        }
+        
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0;
+            font-family: "Fredoka", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 600;
+        }
+        
+        h4 {   
+            font-size: 1rem;
+            font-weight: 400;
+            color: #fff;
+            margin-top: 0;
+            font-family: "Fredoka", sans-serif;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: #fff;
+            font-family: "Fredoka", sans-serif;
+            margin-left: 20px;
+            margin-right: 20px;
+            text-align: center;
+            transform: translateY(-80px);
+        }
+        
+        .fredoka-regular {
+          font-family: "Fredoka", sans-serif;
+          font-optical-sizing: auto;
+          font-weight: 400;
+          font-style: normal;
+          font-variation-settings: "wdth" 100;
+        }
+        
+        .fredoka-bold {
+          font-family: "Fredoka", sans-serif;
+          font-optical-sizing: auto;
+          font-weight: 700;
+          font-style: normal;
+          font-variation-settings: "wdth" 100;
+        }
+        
+        .fredoka-semibold {
+          font-family: "Fredoka", sans-serif;
+          font-optical-sizing: auto;
+          font-weight: 600;
+          font-style: normal;
+          font-variation-settings: "wdth" 100;
+        }
+        
+        .fredoka-light {
+          font-family: "Fredoka", sans-serif;
+          font-optical-sizing: auto;
+          font-weight: 300;
+          font-style: normal;
+          font-variation-settings: "wdth" 100;
+        }
+
+        .custom-audio-player button {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            outline: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+            transition: background 0.2s, color 0.2s, transform 0.1s;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .custom-audio-player button:hover {
+            background: rgba(255,255,255,0.32);
+            color: #ffb6c1;
+            transform: scale(1.08);
+        }
+        
+        .custom-audio-player input[type="range"] {
+            -webkit-appearance: none;
+            width: 55px;
+            height: 5px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 3px;
+            outline: none;
+            margin: 0 0.2rem;
+            vertical-align: middle;
+            position: relative;
+            top: 0;
+            display: block;
+        }
+        
+        .custom-audio-player input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px 0 rgba(0,0,0,0.18);
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: -2.5px;
+        }
+        
+        .custom-audio-player input[type="range"]::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px 0 rgba(0,0,0,0.18);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .custom-audio-player input[type="range"]::-ms-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px 0 rgba(0,0,0,0.18);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .custom-audio-player input[type="range"]:focus {
+            background: rgba(255,255,255,0.32);
+        }
+        
+        .custom-audio-player input[type="range"]::-webkit-slider-runnable-track {
+            height: 5px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #fff 0%, #fff 50%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.18) 100%);
+        }
+        
+        .custom-audio-player .time {
+            color: #fff;
+            font-size: 0.85rem;
+            min-width: 32px;
+            text-align: center;
+            font-family: "Fredoka", sans-serif;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 28px;
+        }
+        
+        @media (max-width: 600px) {
+            .custom-audio-player {
+                max-width: 90vw;
+                padding: 0.3rem 0.1rem;
+                gap: 0.2rem;
+            }
+            .custom-audio-player input[type="range"] {
+                width: 30px;
+            }
+            .custom-audio-player button {
+                width: 22px;
+                height: 22px;
+                font-size: 0.9rem;
+            }
+            .custom-audio-player .time {
+                font-size: 0.7rem;
+                min-width: 22px;
+                height: 22px;
+            }
+        }
+        
+        audio {
+            width: 100%;
+            max-width: 350px;
+            margin-top: 1.5rem;
+            background: transparent;
+            filter: invert(1) grayscale(1) brightness(2);
+            border-radius: 8px;
+        }
+        
+        audio::-webkit-media-controls-panel {
+            background: transparent;
+        }
+        
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-volume-slider,
+        audio::-webkit-media-controls-mute-button,
+        audio::-webkit-media-controls-timeline,
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            filter: invert(1) grayscale(1) brightness(2);
+        }
+        
+        .scroll-indicator {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+        
+        .scroll-indicator.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .scroll-arrow {
+            width: 24px;
+            height: 24px;
+            border: solid #fff;
+            border-width: 0 4px 4px 0;
+            display: inline-block;
+            padding: 4px;
+            transform: rotate(45deg);
+            margin-top: 4px;
+            animation: bounce 1.2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(45deg); }
+            50% { transform: translateY(10px) rotate(45deg); }
+        }
+    .sticky-transform {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.2rem;
+        transition: all 0.5s cubic-bezier(.4,1.4,.6,1);
+        z-index: 2000;
+        background: transparent;
+    }
+    .sticky-transform.compact {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        max-width: 700px;
+        margin: 0 auto;
+        background: rgba(30,30,30,0.95);
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.3);
+        padding: 0.5rem 0;
+        gap: 1rem;
+        transition: all 0.5s cubic-bezier(.4,1.4,.6,1);
+    }
+    .sticky-transform .songart {
+        transition: width 0.5s, height 0.5s, box-shadow 0.5s;
+    }
+    .sticky-transform.compact .songart {
+        width: 70px;
+        min-width: 60px;
+        max-width: 70px;
+        border-radius: 8px;
+        margin-right: 15px;
+        box-shadow:
+            -2px -2px 4px 0 rgba(255,255,255,0.35),
+             2px  2px 4px 0 rgba(255,255,255,0.35),
+             2px -2px 4px 0 rgba(0,0,0,0.13),
+            -2px  2px 4px 0 rgba(0,0,0,0.13);
+    }
+    .sticky-transform .song-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.5s;
+        text-align: center;
+    }
+    .sticky-transform.compact .song-meta {
+        align-items: center;
+        margin-right: 1.2rem;
+        text-align: center;
+    }
+    .sticky-transform .fredoka-main {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+        line-height: 1.1;
+        transition: font-size 0.5s;
+    }
+    .sticky-transform.compact .fredoka-main {
+        font-size: 1.3rem;
+    }
+    .sticky-transform .song-meta h4 {
+        font-size: 1.2rem;
+        font-weight: 400;
+        color: #fff;
+        opacity: 0.9;
+        margin: 0;
+        transition: font-size 0.5s;
+    }
+    .sticky-transform.compact .song-meta h4 {
+        font-size: 1rem;
+    }
+    .sticky-transform .custom-audio-player {
+        margin-top: 0.5rem;
+        width: 80%;
+        max-width: 250px;
+        transition: max-width 0.5s, width 0.5s, box-shadow 0.5s;
+    }
+    .sticky-transform.compact .custom-audio-player {
+        margin-top: 0;
+        max-width: 180px;
+        width: 180px;
+        box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+    }
+    @media (max-width: 600px) {
+        .sticky-transform .songart {
+            width: 70vw !important;
+            min-width: 36px;
+            max-width: 70vw;
+        }
+        .sticky-transform.compact .songart {
+            width: 36px !important;
+            min-width: 28px;
+            max-width: 36px;
+        }
+        .sticky-transform .fredoka-main {
+            font-size: 1.2rem;
+        }
+        .sticky-transform.compact .fredoka-main {
+            font-size: 1rem;
+        }
+        .sticky-transform .song-meta h4 {
+            font-size: 1rem;
+        }
+        .sticky-transform.compact .song-meta h4 {
+            font-size: 0.8rem;
+        }
+        .sticky-transform .custom-audio-player {
+            max-width: 90vw;
+        }
+        .sticky-transform.compact .custom-audio-player {
+            max-width: 120px;
+            width: 120px;
+        }
+    }
+    /* Fix for sticky bar overlap: add margin to lyrics-section when sticky bar is compact */
+    .sticky-transform.compact ~ .lyrics-section {
+        margin-top: 70px;
+        transition: margin-top 0.5s;
+    }
+    .birthday-message {
+        font-size: 1.7rem;
+        font-family: "Fredoka", sans-serif;
+        color: #fff;
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto 1.2rem auto;
+        font-weight: 600;
+        line-height: 1.5;
+        background: rgba(0,0,0,0.10);
+        border-radius: 14px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.13);
+    }
+    @media (max-width: 600px) {
+        .birthday-message {
+            font-size: 1rem;
+            padding: 0.5rem 0.2rem;
+            margin-bottom: 0.7rem;
+        }
+    }
+    </style>
 </head>
 <body>
-    <?php include 'stars.html'; ?>
+    <div class="sticky-header" id="stickyHeader">
+        <div class="sticky-content">
+            <img src="gaanart.jpg" alt="songart" class="sticky-songart" onerror="this.style.display='none'">
+            <span class="sticky-title-author">
+                <span class="sticky-title">Gaan</span>
+                <span class="sticky-author">by ychine</span>
+            </span>
+        </div>
+    </div>
+    
+    <div class="container">
+    <?php include 'stars.html'; ?>    
+    <div class="main-section" id="mainSection">
+        <h3 class="birthday-message">Happy 20th Birthday, my dear <b>Angela</b>! Here's the song I wrote for you!</h3>
+        <div class="sticky-transform" id="stickyTransform">
+            <img src="gaanart.jpg" alt="songart" class="songart" onerror="this.style.display='none'">
+            <div class="song-meta">
+                <h2 class="fredoka-main">Gaan</h2>
+                <h4>by ychine</h4>
+            </div>
+            <div class="custom-audio-player" id="customAudioPlayer">
+                <button id="playPauseBtn" title="Play/Pause">&#9654;</button>
+                <input type="range" id="seekBar" value="0" min="0" max="100">
+                <span class="time" id="currentTime">0:00</span> /
+                <span class="time" id="duration">0:00</span>
+            </div>
+        </div>
+        <audio id="audioSource" src="gaan.wav"></audio>
+        <div class="scroll-indicator" id="scrollIndicator">
+            <span style="color:#fff;font-family:'Fredoka',sans-serif;font-size:1rem;">Scroll down</span>
+            <span class="scroll-arrow"></span>
+        </div>
+    </div>
+        
+        <div class="lyrics-section">
+            <h3>Lyrics</h3>
+            <p>
+                Gaan gaan gaan gaan gaan<br>
+                Eto bhalobasha, eto shopno<br>
+                Tomake niye, shurer majhe<br>
+                Gaan gaan gaan gaan gaan<br>
+                <br>
+                Shopnogulo tomar chokhe<br>
+                Hashi tomar othey thotey<br>
+                Ei moner kotha, shudhu tomakei bola<br>
+                <br>
+                Gaan gaan gaan gaan gaan<br>
+                Tomar kachhe, amar shob kichu<br>
+                Tomake niye, shurer majhe<br>
+                Gaan gaan gaan gaan gaan<br>
+                <br>
+               
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Sticky transform on scroll
+        const stickyTransform = document.getElementById('stickyTransform');
+        const mainSection = document.getElementById('mainSection');
+        const lyricsSection = document.querySelector('.lyrics-section');
+        const scrollIndicator = document.getElementById('scrollIndicator');
+        
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const mainRect = mainSection.getBoundingClientRect();
+            // When main section is scrolled past, compact the sticky-transform
+            if (scrollTop > 100) {
+                stickyTransform.classList.add('compact');
+                if(scrollIndicator) scrollIndicator.classList.add('hide');
+            } else {
+                stickyTransform.classList.remove('compact');
+                if(scrollIndicator) scrollIndicator.classList.remove('hide');
+            }
+        });
+        // Lyrics fade-in on scroll into view
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        lyricsSection.classList.add('visible');
+                    } else {
+                        lyricsSection.classList.remove('visible');
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+        observer.observe(lyricsSection);
+        // Audio player functionality
+        const audio = document.getElementById('audioSource');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const seekBar = document.getElementById('seekBar');
+        const currentTime = document.getElementById('currentTime');
+        const duration = document.getElementById('duration');
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        }
+        audio.addEventListener('loadedmetadata', () => {
+            seekBar.max = Math.floor(audio.duration);
+            duration.textContent = formatTime(audio.duration);
+        });
+        audio.addEventListener('timeupdate', () => {
+            seekBar.value = Math.floor(audio.currentTime);
+            currentTime.textContent = formatTime(audio.currentTime);
+        });
+        seekBar.addEventListener('input', () => {
+            audio.currentTime = seekBar.value;
+        });
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.innerHTML = '&#10073;&#10073;'; 
+            } else {
+                audio.pause();
+                playPauseBtn.innerHTML = '&#9654;'; 
+            }
+        });
+        audio.addEventListener('play', () => {
+            playPauseBtn.innerHTML = '&#10073;&#10073;';
+        });
+        audio.addEventListener('pause', () => {
+            playPauseBtn.innerHTML = '&#9654;';
+        });
+        // Debug: Log when sticky transform should be visible
+        console.log('Sticky transform script loaded');
+    </script>
 </body>
 </html>
