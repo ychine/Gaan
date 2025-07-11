@@ -35,6 +35,31 @@ ctx.setTransform(1, 0, 0, 1, 0, 0);
 ctx.scale(dpr, dpr);
 canvas.width = width * dpr;
 canvas.height = height * dpr;
+
+
+let fireworks = [];
+let fireworksActive = false;
+let lastFireworkTime = 0;
+const fireworkInterval = 1700; 
+let songStartTime = null;
+let audioElement = null;
+
+
+function getAudioElement() {
+  if (!audioElement) {
+    audioElement = document.getElementById('audioSource');
+    if (!audioElement) {
+   
+      try {
+        audioElement = window.parent.document.getElementById('audioSource');
+      } catch (e) {
+        console.log('Audio element not found');
+      }
+    }
+  }
+  return audioElement;
+}
+
 function resize() {
   dpr = setCanvasSize(canvas);
   width = canvas.width / dpr;
@@ -48,6 +73,7 @@ function resize() {
 window.addEventListener('resize', resize);
 const globalStarDriftX = 0.12;
 const globalStarDriftY = 0.04;
+
 class Star {
   constructor(x, y, radius, speed, twinkleSpeed) {
     this.x = x;
@@ -82,6 +108,112 @@ class Star {
     ctx.restore();
   }
 }
+
+// Firework particle class
+class FireworkParticle {
+  constructor(x, y, vx, vy, color) {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.color = color;
+    this.life = 0;
+    this.maxLife = Math.random() * 60 + 120;
+    this.gravity = 0.15;
+    this.friction = 0.98;
+    this.size = Math.random() * 3 + 2;
+    this.brightness = 1;
+    this.trail = [];
+    this.maxTrailLength = 8; 
+  }
+  
+  update() {
+
+    this.trail.push({x: this.x, y: this.y, brightness: this.brightness});
+    
+    if (this.trail.length > this.maxTrailLength) {
+      this.trail.shift();
+    }
+    
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += this.gravity;
+    this.vx *= this.friction;
+    this.vy *= this.friction;
+    this.life++;
+    this.brightness = 1 - (this.life / this.maxLife);
+  }
+  
+  draw(ctx) {
+    if (this.brightness <= 0) return;
+    
+    for (let i = 0; i < this.trail.length; i++) {
+      const trailPoint = this.trail[i];
+      const trailAlpha = (i / this.trail.length) * this.brightness * 0.6;
+      
+      ctx.save();
+      ctx.globalAlpha = trailAlpha;
+      ctx.beginPath();
+      ctx.arc(trailPoint.x, trailPoint.y, this.size * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 4;
+      ctx.fill();
+      ctx.restore();
+    }
+    
+    ctx.save();
+    ctx.globalAlpha = this.brightness;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 8;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+class FireworkBurst {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.particles = [];
+    this.life = 0;
+    this.maxLife = 180; 
+    
+    const particleCount = Math.floor(Math.random() * 30) + 50;
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
+    
+    for (let i = 0; i < particleCount; i++) {
+      const angle = (Math.PI * 2 * i) / particleCount;
+      const speed = Math.random() * 3 + 2;
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      this.particles.push(new FireworkParticle(x, y, vx, vy, color));
+    }
+  }
+  
+  update() {
+    this.life++;
+    for (let particle of this.particles) {
+      particle.update();
+    }
+  }
+  
+  draw(ctx) {
+    for (let particle of this.particles) {
+      particle.draw(ctx);
+    }
+  }
+  
+  isDead() {
+    return this.life >= this.maxLife;
+  }
+}
+
 let stars = [];
 function createStars(num) {
   stars = [];
@@ -98,8 +230,10 @@ function createStars(num) {
   }
 }
 createStars(80);
+
 let meteors = [];
 let nextMeteorTime = Date.now() + Math.random() * 5000 + 3000;
+
 function spawnMeteor() {
   const fromTop = Math.random() > 0.5;
   let x, y, vx, vy;
@@ -121,6 +255,7 @@ function spawnMeteor() {
   meteors.push({x, y, vx, vy, life: 0, maxLife: Math.random() * 20 + 40});
   nextMeteorTime = Date.now() + Math.random() * 5000 + 3000;
 }
+
 function drawMeteor(meteor) {
   const len = 80;
   const tail = 0.7;
@@ -136,12 +271,34 @@ function drawMeteor(meteor) {
   ctx.stroke();
   ctx.restore();
 }
+
+// Check if fireworks should be active based on song time
+function checkFireworksTime() {
+  const audio = getAudioElement();
+  if (!audio || audio.paused) return false;
+  
+  const currentTime = audio.currentTime;
+  const startTime = 77; // 1:17 in seconds
+  const endTime = 106; // 1:46 in seconds
+  
+  return currentTime >= startTime && currentTime <= endTime;
+}
+
+// Spawn a new firework burst
+function spawnFirework() {
+  const x = Math.random() * width * 0.8 + width * 0.1; // Random position in sky
+  const y = Math.random() * height * 0.6 + height * 0.1; // Upper 60% of screen
+  fireworks.push(new FireworkBurst(x, y));
+}
+
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
   for (let star of stars) {
     star.update();
     star.draw(ctx);
   }
+  
   if (Date.now() > nextMeteorTime) {
     spawnMeteor();
   }
@@ -155,9 +312,36 @@ function animate() {
       meteors.splice(i, 1);
     }
   }
+  
+  const shouldFireworksBeActive = checkFireworksTime();
+  
+  if (shouldFireworksBeActive && !fireworksActive) {
+    fireworksActive = true;
+    lastFireworkTime = Date.now();
+  } else if (!shouldFireworksBeActive && fireworksActive) {
+    fireworksActive = false;
+    fireworks = []; 
+  }
+  
+  if (fireworksActive && Date.now() - lastFireworkTime > fireworkInterval) {
+    spawnFirework();
+    lastFireworkTime = Date.now();
+  }
+  
+  for (let i = fireworks.length - 1; i >= 0; i--) {
+    const firework = fireworks[i];
+    firework.update();
+    firework.draw(ctx);
+    
+    if (firework.isDead()) {
+      fireworks.splice(i, 1);
+    }
+  }
+  
   requestAnimationFrame(animate);
 }
 animate();
+
 canvas.addEventListener('click', function(e) {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
