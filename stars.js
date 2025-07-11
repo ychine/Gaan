@@ -40,7 +40,7 @@ canvas.height = height * dpr;
 let fireworks = [];
 let fireworksActive = false;
 let lastFireworkTime = 0;
-const fireworkInterval = 1700; 
+const fireworkInterval = 1700; // 35 BPM = ~1.7 seconds per burst
 let songStartTime = null;
 let audioElement = null;
 
@@ -71,8 +71,13 @@ function resize() {
   createStars(80);
 }
 window.addEventListener('resize', resize);
-const globalStarDriftX = 0.12;
-const globalStarDriftY = 0.04;
+
+let globalStarDriftX = 0.12;
+let globalStarDriftY = 0.04;
+const normalDriftX = 0.12;
+const normalDriftY = 0.04;
+const fastDriftX = 0.32;
+const fastDriftY = 0.13;
 
 class Star {
   constructor(x, y, radius, speed, twinkleSpeed) {
@@ -118,12 +123,12 @@ class FireworkParticle {
     this.color = color;
     this.life = 0;
     this.maxLife = Math.random() * 25 + 50;
-    this.gravity = 0.15;
-    this.friction = 0.98;
+    this.gravity = 0.06; 
+    this.friction = 0.995; 
     this.size = Math.random() * 1.5 + 0.8;
     this.brightness = 1;
     this.trail = [];
-    this.maxTrailLength = 3; 
+    this.maxTrailLength = 3;
   }
   
   update() {
@@ -177,20 +182,18 @@ class FireworkBurst {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-        this.particles = [];
+    this.particles = [];
     this.life = 0;
     this.maxLife = 80;
     
-    const particleCount = Math.floor(Math.random() * 20) + 30;
+    const particleCount = Math.floor(Math.random() * 30) + 60;
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
-    
     for (let i = 0; i < particleCount; i++) {
       const angle = (Math.PI * 2 * i) / particleCount;
-      const speed = Math.random() * 3 + 2;
+      const speed = Math.random() * 3.5 + 3.5; 
       const vx = Math.cos(angle) * speed;
       const vy = Math.sin(angle) * speed;
       const color = colors[Math.floor(Math.random() * colors.length)];
-      
       this.particles.push(new FireworkParticle(x, y, vx, vy, color));
     }
   }
@@ -310,7 +313,16 @@ function animate() {
     }
   }
   
+
   const shouldFireworksBeActive = checkFireworksTime();
+
+  if (shouldFireworksBeActive) {
+    globalStarDriftX = fastDriftX;
+    globalStarDriftY = fastDriftY;
+  } else {
+    globalStarDriftX = normalDriftX;
+    globalStarDriftY = normalDriftY;
+  }
   
   if (shouldFireworksBeActive && !fireworksActive) {
     fireworksActive = true;
