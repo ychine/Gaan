@@ -109,7 +109,6 @@ class Star {
   }
 }
 
-// Firework particle class
 class FireworkParticle {
   constructor(x, y, vx, vy, color) {
     this.x = x;
