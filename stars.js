@@ -118,13 +118,13 @@ class FireworkParticle {
     this.vy = vy;
     this.color = color;
     this.life = 0;
-    this.maxLife = Math.random() * 60 + 120;
+    this.maxLife = Math.random() * 45 + 80;
     this.gravity = 0.15;
     this.friction = 0.98;
-    this.size = Math.random() * 3 + 2;
+    this.size = Math.random() * 1.5 + 0.8;
     this.brightness = 1;
     this.trail = [];
-    this.maxTrailLength = 8; 
+    this.maxTrailLength = 4; 
   }
   
   update() {
@@ -180,7 +180,7 @@ class FireworkBurst {
     this.y = y;
     this.particles = [];
     this.life = 0;
-    this.maxLife = 180; 
+    this.maxLife = 130; 
     
     const particleCount = Math.floor(Math.random() * 30) + 50;
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
@@ -272,22 +272,20 @@ function drawMeteor(meteor) {
   ctx.restore();
 }
 
-// Check if fireworks should be active based on song time
 function checkFireworksTime() {
   const audio = getAudioElement();
   if (!audio || audio.paused) return false;
   
   const currentTime = audio.currentTime;
-  const startTime = 77; // 1:17 in seconds
-  const endTime = 106; // 1:46 in seconds
+  const startTime = 77;
+  const endTime = 106; 
   
   return currentTime >= startTime && currentTime <= endTime;
 }
 
-// Spawn a new firework burst
 function spawnFirework() {
-  const x = Math.random() * width * 0.8 + width * 0.1; // Random position in sky
-  const y = Math.random() * height * 0.6 + height * 0.1; // Upper 60% of screen
+  const x = Math.random() * width * 0.8 + width * 0.1; 
+  const y = Math.random() * height * 0.6 + height * 0.1; 
   fireworks.push(new FireworkBurst(x, y));
 }
 
