@@ -118,13 +118,13 @@ class FireworkParticle {
     this.vy = vy;
     this.color = color;
     this.life = 0;
-    this.maxLife = Math.random() * 45 + 80;
+    this.maxLife = Math.random() * 25 + 50;
     this.gravity = 0.15;
     this.friction = 0.98;
     this.size = Math.random() * 1.5 + 0.8;
     this.brightness = 1;
     this.trail = [];
-    this.maxTrailLength = 4; 
+    this.maxTrailLength = 3; 
   }
   
   update() {
@@ -178,11 +178,11 @@ class FireworkBurst {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.particles = [];
+        this.particles = [];
     this.life = 0;
-    this.maxLife = 130; 
+    this.maxLife = 80;
     
-    const particleCount = Math.floor(Math.random() * 30) + 50;
+    const particleCount = Math.floor(Math.random() * 20) + 30;
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
     
     for (let i = 0; i < particleCount; i++) {
